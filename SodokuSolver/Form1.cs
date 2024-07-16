@@ -84,7 +84,7 @@ namespace WinFormsApp2
             if (e.KeyCode == Keys.Delete)
             {
 
-                DataGridViewCell cell = dataGridView1.SelectedCells[0];
+                DataGridViewCell cell = dataGridView1.SelectedCells[dataGridView1.SelectedCells.Count-1];
                 oldVal = Convert.ToInt32(cell.Value);
                 cell.Value = 0;
                 updatePencil(cell.RowIndex, cell.ColumnIndex);
@@ -194,6 +194,7 @@ namespace WinFormsApp2
                 selectionLock = true;
                 if (dataGridView1.SelectedCells.Count > 0)
                 {
+                    var selectedCell = dataGridView1.SelectedCells[0];
                     int selectedValue = Convert.ToInt32(dataGridView1.SelectedCells[0].Value);
 
                     if (selectedValue != 0)
@@ -212,7 +213,9 @@ namespace WinFormsApp2
                             }
                         }
                         //dataGridView1.MultiSelect = false;
+                        selectedCell.Selected = true;
                     }
+
                 }
                 selectionLock = false;
             }

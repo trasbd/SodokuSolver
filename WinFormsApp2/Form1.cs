@@ -3,6 +3,9 @@ namespace WinFormsApp2
     public partial class Form1 : Form
     {
         sRow[] grid = new sRow[9];
+        int oldVal;
+        bool selectionLock = false;
+
         PencilRow[] PencilGrid = new PencilRow[9];
         public Form1()
         {
@@ -78,23 +81,77 @@ namespace WinFormsApp2
         {
             if (e.KeyCode == Keys.Delete)
             {
-                foreach (DataGridViewCell cell in dataGridView1.SelectedCells)
-                {
-                    cell.Value = 0;
-                }
+
+                DataGridViewCell cell = dataGridView1.SelectedCells[0];
+                oldVal = (int)cell.Value;
+                cell.Value = 0;
+                updatePencil(cell.RowIndex, cell.ColumnIndex);
+
             }
         }
 
-        public void updatePencil()
+        public void updatePencil(int rowEdit, int colEdit)
         {
-            foreach (var row in grid)
+            var again = true;
+            while (again)
             {
+                again = false;
+                foreach (DataGridViewRow row in dataGridView1.Rows)
+                {
+                    foreach (DataGridViewCell cell in row.Cells)
+                    {
 
+
+                        foreach (DataGridViewCell pencell in dataGridView2.Rows[row.Index].Cells)
+                        {
+                            if (oldVal != 0 && colEdit == cell.ColumnIndex && rowEdit == cell.RowIndex)
+                                (pencell.Value as PencilCell).removeMark(oldVal * -1);
+                            if ((int)cell.Value != 0)
+                                (pencell.Value as PencilCell).removeMark((int)cell.Value);
+
+                        }
+
+                        foreach (DataGridViewRow penrow in dataGridView2.Rows)
+                        {
+                            if (oldVal != 0 && colEdit == cell.ColumnIndex && rowEdit == cell.RowIndex)
+                                (penrow.Cells[cell.ColumnIndex].Value as PencilCell).removeMark(oldVal * -1);
+                            if ((int)cell.Value != 0)
+                                (penrow.Cells[cell.ColumnIndex].Value as PencilCell).removeMark((int)(cell.Value));
+                        }
+
+                        for (int i = cell.ColumnIndex - (cell.ColumnIndex % 3); i <= cell.ColumnIndex + 2 - (cell.ColumnIndex % 3); i++)
+                        {
+                            for (int j = cell.RowIndex - (cell.RowIndex % 3); j <= cell.RowIndex + 2 - (cell.RowIndex % 3); j++)
+                            {
+                                if (oldVal != 0 && colEdit == cell.ColumnIndex && rowEdit == cell.RowIndex)
+                                    (dataGridView2.Rows[j].Cells[i].Value as PencilCell).removeMark(oldVal * -1);
+                                if ((int)cell.Value != 0)
+                                    (dataGridView2.Rows[j].Cells[i].Value as PencilCell).removeMark(((int)cell.Value));
+                            }
+                        }
+
+                        if ((int)cell.Value != 0)
+                        {
+                            (dataGridView2.Rows[cell.RowIndex].Cells[cell.ColumnIndex].Value as PencilCell).removeMark(0);
+                        }
+                        else if ((int)cell.Value == 0 && oldVal != 0 && colEdit == cell.ColumnIndex && rowEdit == cell.RowIndex)
+                        {
+                            dataGridView2.Rows[cell.RowIndex].Cells[cell.ColumnIndex].Value = new PencilCell();
+                            again = true;
+                            oldVal = 0;
+                        }
+
+
+                    }
+                }
             }
+            dataGridView2.Refresh();
         }
 
         private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
+            updatePencil(e.RowIndex, e.ColumnIndex);
+            /*
             int eValue = (int)dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
 
             if ((eValue > 0))
@@ -117,6 +174,52 @@ namespace WinFormsApp2
 
             dataGridView2.Refresh();
 
+            */
+
+        }
+
+        private void dataGridView1_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+        {
+            oldVal = (int)dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+
+
+        }
+
+
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            
+        }
+
+        private void dataGridView1_SelectionChanged(object sender, EventArgs e)
+        {
+            if (!selectionLock)
+            {
+                selectionLock = true;
+                if (dataGridView1.SelectedCells.Count > 0)
+                {
+                    int selectedValue = (int)dataGridView1.SelectedCells[0].Value;
+
+                    if (selectedValue != 0)
+                    {
+                        //dataGridView1.MultiSelect = true;
+                        foreach (DataGridViewRow row in dataGridView1.Rows)
+                        {
+
+                            foreach (DataGridViewCell cell in row.Cells)
+                            {
+                                if ((int)cell.Value == selectedValue)
+                                {
+                                    cell.Selected = true;
+                                    
+                                }
+                            }
+                        }
+                        //dataGridView1.MultiSelect = false;
+                    }
+                }
+                selectionLock = false;
+            }
         }
     }
 
@@ -136,76 +239,80 @@ namespace WinFormsApp2
 
 
 
-public class PencilRow
-{
-    public PencilCell cell1 { get; set; } = new PencilCell();
-    public PencilCell cell2 { get; set; } = new PencilCell();
-    public PencilCell cell3 { get; set; } = new PencilCell();
-    public PencilCell cell4 { get; set; } = new PencilCell();
-    public PencilCell cell5 { get; set; } = new PencilCell();
-    public PencilCell cell6 { get; set; } = new PencilCell();
-    public PencilCell cell7 { get; set; } = new PencilCell();
-    public PencilCell cell8 { get; set; } = new PencilCell();
-    public PencilCell cell9 { get; set; } = new PencilCell();
-
-}
-
-public class PencilCell
-{
-    public bool[] canBe = new bool[9];
-
-    public PencilCell()
+    public class PencilRow
     {
-        for (int i = 0; i < 9; i++)
-        {
-            canBe[i] = true;
-        }
+        public PencilCell cell1 { get; set; } = new PencilCell();
+        public PencilCell cell2 { get; set; } = new PencilCell();
+        public PencilCell cell3 { get; set; } = new PencilCell();
+        public PencilCell cell4 { get; set; } = new PencilCell();
+        public PencilCell cell5 { get; set; } = new PencilCell();
+        public PencilCell cell6 { get; set; } = new PencilCell();
+        public PencilCell cell7 { get; set; } = new PencilCell();
+        public PencilCell cell8 { get; set; } = new PencilCell();
+        public PencilCell cell9 { get; set; } = new PencilCell();
+
     }
 
-    public PencilCell(int val)
+    public class PencilCell
     {
-        for (int i = 0; i < 9; i++)
-        {
-            canBe[i] = false;
-        }
-        canBe[val - 1] = true;
-    }
+        public bool[] canBe = new bool[9];
 
-    public void removeMark (int val)
+        public PencilCell()
         {
-            if(val == 0)
+            for (int i = 0; i < 9; i++)
             {
-                for(int i = 0;i < 9;i++)
+                canBe[i] = true;
+            }
+        }
+
+        public PencilCell(int val)
+        {
+            for (int i = 0; i < 9; i++)
+            {
+                canBe[i] = false;
+            }
+            canBe[val - 1] = true;
+        }
+
+        public void removeMark(int val)
+        {
+            if (val == 0)
+            {
+                for (int i = 0; i < 9; i++)
                     canBe[i] = false;
             }
+            else if (val < 0)
+            {
+                canBe[val * -1 - 1] = true;
+            }
             else
-            canBe[val-1] = false;
+                canBe[val - 1] = false;
         }
 
-    public override string ToString()
-    {
-        var displayString = "";
-        for (int i = 1; i <= 9; i++)
+        public override string ToString()
         {
-            if (canBe[i - 1])
+            var displayString = "";
+            for (int i = 1; i <= 9; i++)
             {
-                displayString += i.ToString();
+                if (canBe[i - 1])
+                {
+                    displayString += i.ToString();
+                }
+                else
+                {
+                    displayString += " ";
+                }
+                if (i == 3 || i == 6)
+                {
+                    displayString += Environment.NewLine;
+                }
+                else if (i != 9)
+                {
+                    displayString += " ";
+                }
             }
-            else
-            {
-                displayString += " ";
-            }
-            if (i == 3 || i == 6)
-            {
-                displayString += Environment.NewLine;
-            }
-            else if (i != 9)
-            {
-                displayString += " ";
-            }
+            return displayString;
         }
-        return displayString;
-    }
 
-}
+    }
 }

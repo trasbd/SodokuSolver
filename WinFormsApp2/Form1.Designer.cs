@@ -62,9 +62,12 @@
             dataGridView1.ShowCellToolTips = false;
             dataGridView1.Size = new Size(275, 430);
             dataGridView1.TabIndex = 0;
+            dataGridView1.CellBeginEdit += dataGridView1_CellBeginEdit;
+            dataGridView1.CellClick += dataGridView1_CellClick;
             dataGridView1.CellEndEdit += dataGridView1_CellEndEdit;
             dataGridView1.CellFormatting += dataGridView1_CellFormatting;
             dataGridView1.CellPainting += dataGridView1_CellPainting;
+            dataGridView1.SelectionChanged += dataGridView1_SelectionChanged;
             dataGridView1.KeyDown += dataGridView1_KeyDown;
             // 
             // dataGridView2

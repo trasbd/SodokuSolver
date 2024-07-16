@@ -1,3 +1,6 @@
+using System.Data;
+using System.Text;
+
 namespace WinFormsApp2
 {
     public partial class Form1 : Form
@@ -5,7 +8,6 @@ namespace WinFormsApp2
         sRow[] grid = new sRow[9];
         int oldVal;
         bool selectionLock = false;
-
         PencilRow[] PencilGrid = new PencilRow[9];
         public Form1()
         {
@@ -68,7 +70,7 @@ namespace WinFormsApp2
         private void dataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
 
-            int value = (int)e.Value;
+            int value = Convert.ToInt32(e.Value);
             if (value == 0)
             {
                 e.Value = string.Empty;
@@ -83,7 +85,7 @@ namespace WinFormsApp2
             {
 
                 DataGridViewCell cell = dataGridView1.SelectedCells[0];
-                oldVal = (int)cell.Value;
+                oldVal = Convert.ToInt32(cell.Value);
                 cell.Value = 0;
                 updatePencil(cell.RowIndex, cell.ColumnIndex);
 
@@ -106,8 +108,8 @@ namespace WinFormsApp2
                         {
                             if (oldVal != 0 && colEdit == cell.ColumnIndex && rowEdit == cell.RowIndex)
                                 (pencell.Value as PencilCell).removeMark(oldVal * -1);
-                            if ((int)cell.Value != 0)
-                                (pencell.Value as PencilCell).removeMark((int)cell.Value);
+                            if (Convert.ToInt32(cell.Value) != 0)
+                                (pencell.Value as PencilCell).removeMark(Convert.ToInt32(cell.Value));
 
                         }
 
@@ -115,8 +117,8 @@ namespace WinFormsApp2
                         {
                             if (oldVal != 0 && colEdit == cell.ColumnIndex && rowEdit == cell.RowIndex)
                                 (penrow.Cells[cell.ColumnIndex].Value as PencilCell).removeMark(oldVal * -1);
-                            if ((int)cell.Value != 0)
-                                (penrow.Cells[cell.ColumnIndex].Value as PencilCell).removeMark((int)(cell.Value));
+                            if (Convert.ToInt32(cell.Value) != 0)
+                                (penrow.Cells[cell.ColumnIndex].Value as PencilCell).removeMark(Convert.ToInt32((cell.Value)));
                         }
 
                         for (int i = cell.ColumnIndex - (cell.ColumnIndex % 3); i <= cell.ColumnIndex + 2 - (cell.ColumnIndex % 3); i++)
@@ -125,16 +127,16 @@ namespace WinFormsApp2
                             {
                                 if (oldVal != 0 && colEdit == cell.ColumnIndex && rowEdit == cell.RowIndex)
                                     (dataGridView2.Rows[j].Cells[i].Value as PencilCell).removeMark(oldVal * -1);
-                                if ((int)cell.Value != 0)
-                                    (dataGridView2.Rows[j].Cells[i].Value as PencilCell).removeMark(((int)cell.Value));
+                                if (Convert.ToInt32(cell.Value) != 0)
+                                    (dataGridView2.Rows[j].Cells[i].Value as PencilCell).removeMark((Convert.ToInt32(cell.Value)));
                             }
                         }
 
-                        if ((int)cell.Value != 0)
+                        if (Convert.ToInt32(cell.Value) != 0)
                         {
                             (dataGridView2.Rows[cell.RowIndex].Cells[cell.ColumnIndex].Value as PencilCell).removeMark(0);
                         }
-                        else if ((int)cell.Value == 0 && oldVal != 0 && colEdit == cell.ColumnIndex && rowEdit == cell.RowIndex)
+                        else if (Convert.ToInt32(cell.Value) == 0 && oldVal != 0 && colEdit == cell.ColumnIndex && rowEdit == cell.RowIndex)
                         {
                             dataGridView2.Rows[cell.RowIndex].Cells[cell.ColumnIndex].Value = new PencilCell();
                             again = true;
@@ -152,7 +154,7 @@ namespace WinFormsApp2
         {
             updatePencil(e.RowIndex, e.ColumnIndex);
             /*
-            int eValue = (int)dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+            int eValue = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
 
             if ((eValue > 0))
             {
@@ -180,15 +182,9 @@ namespace WinFormsApp2
 
         private void dataGridView1_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
         {
-            oldVal = (int)dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+            oldVal = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value);
 
 
-        }
-
-
-        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            
         }
 
         private void dataGridView1_SelectionChanged(object sender, EventArgs e)
@@ -198,7 +194,7 @@ namespace WinFormsApp2
                 selectionLock = true;
                 if (dataGridView1.SelectedCells.Count > 0)
                 {
-                    int selectedValue = (int)dataGridView1.SelectedCells[0].Value;
+                    int selectedValue = Convert.ToInt32(dataGridView1.SelectedCells[0].Value);
 
                     if (selectedValue != 0)
                     {
@@ -208,10 +204,10 @@ namespace WinFormsApp2
 
                             foreach (DataGridViewCell cell in row.Cells)
                             {
-                                if ((int)cell.Value == selectedValue)
+                                if (Convert.ToInt32(cell.Value) == selectedValue)
                                 {
                                     cell.Selected = true;
-                                    
+
                                 }
                             }
                         }
@@ -220,6 +216,88 @@ namespace WinFormsApp2
                 }
                 selectionLock = false;
             }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            CheckSingleNumberCell();
+        }
+
+        private void CheckSingleNumberCell()
+        {
+            foreach (DataGridViewRow row in dataGridView2.Rows)
+            {
+                foreach (DataGridViewCell cell in row.Cells)
+                {
+                    PencilCell pencell = cell.Value as PencilCell;
+                    if (pencell.canBe.Count(x => x) == 1)
+                    {
+                        oldVal = Convert.ToInt32(dataGridView1.Rows[cell.RowIndex].Cells[cell.ColumnIndex].Value);
+                        dataGridView1.Rows[cell.RowIndex].Cells[cell.ColumnIndex].Value = Array.IndexOf(pencell.canBe, true) + 1;
+                        updatePencil(cell.RowIndex, cell.ColumnIndex);
+                        dataGridView2.Refresh();
+                    }
+                }
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            SaveGridCSV(".\\grid.csv");
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            LoadGridCSV(".\\grid.csv");
+        }
+
+        private void SaveGridCSV(string filename)
+        {
+            var sb = new StringBuilder();
+
+            var headers = dataGridView1.Columns.Cast<DataGridViewColumn>();
+            sb.AppendLine(string.Join(",", headers.Select(column => "\"" + column.HeaderText + "\"").ToArray()));
+
+            foreach (DataGridViewRow row in dataGridView1.Rows)
+            {
+                var cells = row.Cells.Cast<DataGridViewCell>();
+                sb.AppendLine(string.Join(",", cells.Select(cell => "\"" + cell.Value + "\"").ToArray()));
+            }
+
+            File.WriteAllText(".\\grid.csv", sb.ToString());
+        }
+
+        private void LoadGridCSV(string filePath)
+        {
+            //var filePath = ".\\grid.csv";
+            var dt = new DataTable();
+            // Creating the columns
+            foreach (var headerLine in File.ReadLines(filePath).Take(1))
+            {
+                foreach (var headerItem in headerLine.Replace("\"", "").Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    dt.Columns.Add(headerItem.Trim());
+                }
+            }
+
+            // Adding the rows
+            foreach (var line in File.ReadLines(filePath).Skip(1))
+            {
+                dt.Rows.Add(line.Replace("\"", "").Split(','));
+            }
+
+            foreach (DataGridViewRow row in dataGridView2.Rows)
+            {
+                foreach (DataGridViewCell cell in row.Cells)
+                {
+                    cell.Value = new PencilCell();
+                }
+            }
+
+            dataGridView1.DataSource = dt;
+            dataGridView1.Refresh();
+            oldVal = 0;
+            updatePencil(0, 0);
         }
     }
 

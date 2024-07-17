@@ -84,7 +84,7 @@ namespace WinFormsApp2
             if (e.KeyCode == Keys.Delete)
             {
 
-                DataGridViewCell cell = dataGridView1.SelectedCells[dataGridView1.SelectedCells.Count-1];
+                DataGridViewCell cell = dataGridView1.SelectedCells[dataGridView1.SelectedCells.Count - 1];
                 oldVal = Convert.ToInt32(cell.Value);
                 cell.Value = 0;
                 updatePencil(cell.RowIndex, cell.ColumnIndex);
@@ -238,8 +238,42 @@ namespace WinFormsApp2
                         oldVal = Convert.ToInt32(dataGridView1.Rows[cell.RowIndex].Cells[cell.ColumnIndex].Value);
                         dataGridView1.Rows[cell.RowIndex].Cells[cell.ColumnIndex].Value = Array.IndexOf(pencell.canBe, true) + 1;
                         updatePencil(cell.RowIndex, cell.ColumnIndex);
+                        dataGridView1.Refresh();
                         dataGridView2.Refresh();
                     }
+                }
+            }
+        }
+
+        private void CheckNumberOnlyRow()
+        {
+            foreach (DataGridViewRow row in dataGridView2.Rows)
+            {
+                for (int i = 0; i < 9; i++)
+                {
+                    int count = 0;
+                    int cellRow = -1;
+                    int cellCol = -1;
+                    foreach (DataGridViewCell cell in row.Cells)
+                    {
+                        if ((cell.Value as PencilCell).canBe[i])
+                        {
+                            count++;
+                            cellCol = cell.ColumnIndex;
+                            cellRow = cell.RowIndex;
+                        }
+
+                    }
+
+                    if (count == 1)
+                    {
+                        oldVal = Convert.ToInt32(dataGridView1.Rows[cellRow].Cells[cellCol].Value);
+                        dataGridView1.Rows[cellRow].Cells[cellCol].Value = (i + 1);
+                        updatePencil(cellRow, cellCol);
+                        dataGridView1.Refresh();
+                        dataGridView2.Refresh();
+                    }
+
                 }
             }
         }
@@ -251,7 +285,10 @@ namespace WinFormsApp2
 
         private void button3_Click(object sender, EventArgs e)
         {
-            LoadGridCSV(".\\grid.csv");
+            openFileDialog1.InitialDirectory = System.AppDomain.CurrentDomain.BaseDirectory;
+            openFileDialog1.ShowDialog();
+            if (openFileDialog1.FileName.Contains(".csv"))
+                LoadGridCSV(openFileDialog1.FileName);
         }
 
         private void SaveGridCSV(string filename)
@@ -298,9 +335,26 @@ namespace WinFormsApp2
             }
 
             dataGridView1.DataSource = dt;
+
+            foreach (DataGridViewRow row in dataGridView1.Rows)
+            {
+                foreach(DataGridViewCell cell in row.Cells)
+                {
+                    if(Convert.ToInt32(cell.Value) > 0)
+                    {
+                        cell.Style.BackColor = Color.LightGray;
+                    }
+                }
+            }
+
             dataGridView1.Refresh();
             oldVal = 0;
             updatePencil(0, 0);
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            CheckNumberOnlyRow();
         }
     }
 

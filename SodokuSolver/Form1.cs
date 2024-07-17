@@ -468,6 +468,8 @@ namespace WinFormsApp2
                 dataGridView2.Refresh();
             }
 
+            Cursor = Cursors.Default;
+
         }
     }
 

@@ -201,8 +201,13 @@ namespace WinFormsApp2
                             }
                         }
                         //dataGridView1.MultiSelect = false;
+
                         selectedCell.Selected = true;
+
                     }
+
+                    dataGridView2.MultiSelect = false;
+                    dataGridView2.Rows[selectedCell.RowIndex].Cells[selectedCell.ColumnIndex].Selected = true;
 
                 }
                 selectionLock = false;
@@ -433,6 +438,19 @@ namespace WinFormsApp2
         private void button6_Click(object sender, EventArgs e)
         {
             CheckNumbersOnlyCellBox();
+        }
+
+        private void dataGridView2_SelectionChanged(object sender, EventArgs e)
+        {
+            if (!selectionLock)
+            {
+                if (dataGridView2.SelectedCells.Count > 0)
+                {
+                    dataGridView1.ClearSelection();
+                    var selCell = dataGridView2.SelectedCells[0];
+                    dataGridView1.Rows[selCell.RowIndex].Cells[selCell.ColumnIndex].Selected = true;
+                }
+            }
         }
     }
 

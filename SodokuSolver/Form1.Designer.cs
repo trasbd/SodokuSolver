@@ -103,6 +103,7 @@
             dataGridView2.Size = new Size(275, 430);
             dataGridView2.TabIndex = 1;
             dataGridView2.CellPainting += dataGridView1_CellPainting;
+            dataGridView2.SelectionChanged += dataGridView2_SelectionChanged;
             // 
             // button1
             // 

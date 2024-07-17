@@ -1,4 +1,5 @@
 using SodokuSolver;
+using System.CodeDom;
 using System.Data;
 using System.Text;
 
@@ -562,6 +563,26 @@ namespace WinFormsApp2
                 }
             }
             return displayString;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj == null || !(obj is PencilCell))
+                return false;
+            else
+            {
+                PencilCell rhs = obj as PencilCell;
+                int count = 0;
+                for (int i = 0; i < 9; i++)
+                {
+                    if (canBe[i] == rhs.canBe[i])
+                        count++;
+                    else
+                        return false;
+                }
+
+                return count == 9;
+            }
         }
 
     }

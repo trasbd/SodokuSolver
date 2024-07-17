@@ -152,31 +152,19 @@ namespace WinFormsApp2
 
         private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
-            updatePencil(e.RowIndex, e.ColumnIndex);
-            /*
-            int eValue = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
 
-            if ((eValue > 0))
+            int curVal = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value);
+
+            if (curVal >= 0 && curVal < 9)
             {
-
-
-
-                foreach (DataGridViewRow row in dataGridView2.Rows)
-                {
-                    (row.Cells[e.ColumnIndex].Value as PencilCell).removeMark(eValue);
-
-                }
-                foreach (DataGridViewCell cell in dataGridView2.Rows[e.RowIndex].Cells)
-                {
-                    (cell.Value as PencilCell).removeMark(eValue);
-                }
-
-           (dataGridView2.Rows[e.RowIndex].Cells[e.ColumnIndex].Value as PencilCell).removeMark(-1);
+                updatePencil(e.RowIndex, e.ColumnIndex);
+            }
+            else
+            {
+                dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = oldVal;
             }
 
-            dataGridView2.Refresh();
 
-            */
 
         }
 
@@ -245,7 +233,7 @@ namespace WinFormsApp2
             }
         }
 
-        private void CheckNumberOnlyRow()
+        private void CheckNumbersOnlyCellRow()
         {
             foreach (DataGridViewRow row in dataGridView2.Rows)
             {
@@ -274,6 +262,45 @@ namespace WinFormsApp2
                         dataGridView2.Refresh();
                     }
 
+                }
+            }
+        }
+
+        private void CheckNumbersOnlyCellCol()
+        {
+            foreach (DataGridViewColumn col in dataGridView2.Columns)
+            {
+                for (int i = 0; i < 9; i++)
+                {
+                    int count = 0;
+                    int cellRow = -1;
+                    int cellCol = -1;
+                    foreach (DataGridViewRow row in dataGridView2.Rows)
+                    {
+
+                        
+
+                        var cell = row.Cells[col.Index];
+                        if ((cell.Value as PencilCell).canBe[i])
+                        {
+                            count++;
+                            cellCol = cell.ColumnIndex;
+                            cellRow = cell.RowIndex;
+                        }
+
+
+
+                        
+
+                    }
+                    if (count == 1)
+                    {
+                        oldVal = Convert.ToInt32(dataGridView1.Rows[cellRow].Cells[cellCol].Value);
+                        dataGridView1.Rows[cellRow].Cells[cellCol].Value = (i + 1);
+                        updatePencil(cellRow, cellCol);
+                        dataGridView1.Refresh();
+                        dataGridView2.Refresh();
+                    }
                 }
             }
         }
@@ -338,9 +365,9 @@ namespace WinFormsApp2
 
             foreach (DataGridViewRow row in dataGridView1.Rows)
             {
-                foreach(DataGridViewCell cell in row.Cells)
+                foreach (DataGridViewCell cell in row.Cells)
                 {
-                    if(Convert.ToInt32(cell.Value) > 0)
+                    if (Convert.ToInt32(cell.Value) > 0)
                     {
                         cell.Style.BackColor = Color.LightGray;
                     }
@@ -354,7 +381,12 @@ namespace WinFormsApp2
 
         private void button4_Click(object sender, EventArgs e)
         {
-            CheckNumberOnlyRow();
+            CheckNumbersOnlyCellRow();
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            CheckNumbersOnlyCellCol();
         }
     }
 

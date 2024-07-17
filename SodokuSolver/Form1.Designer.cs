@@ -85,6 +85,7 @@
             dataGridView2.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
             dataGridView2.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridView2.ColumnHeadersVisible = false;
+            dataGridView2.Cursor = Cursors.Hand;
             dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle2.BackColor = SystemColors.Window;
             dataGridViewCellStyle2.Font = new Font("Segoe UI", 9F);
@@ -95,6 +96,7 @@
             dataGridView2.DefaultCellStyle = dataGridViewCellStyle2;
             dataGridView2.Location = new Point(291, 10);
             dataGridView2.Name = "dataGridView2";
+            dataGridView2.ReadOnly = true;
             dataGridView2.RowHeadersVisible = false;
             dataGridView2.RowHeadersWidth = 51;
             dataGridView2.ScrollBars = ScrollBars.None;
@@ -102,6 +104,8 @@
             dataGridView2.ShowCellToolTips = false;
             dataGridView2.Size = new Size(275, 430);
             dataGridView2.TabIndex = 1;
+            dataGridView2.CellMouseClick += dataGridView2_CellMouseDoubleClick;
+            dataGridView2.CellMouseDoubleClick += dataGridView2_CellMouseDoubleClick;
             dataGridView2.CellPainting += dataGridView1_CellPainting;
             dataGridView2.SelectionChanged += dataGridView2_SelectionChanged;
             // 

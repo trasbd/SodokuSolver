@@ -1,3 +1,4 @@
+using SodokuSolver;
 using System.Data;
 using System.Text;
 
@@ -451,6 +452,22 @@ namespace WinFormsApp2
                     dataGridView1.Rows[selCell.RowIndex].Cells[selCell.ColumnIndex].Selected = true;
                 }
             }
+        }
+
+        private void dataGridView2_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+
+            if (e.Clicks >= 2 || e.Button != MouseButtons.Left)
+            {
+                dataGridView2.Rows[e.RowIndex].Cells[e.ColumnIndex].Selected = true;
+                this.Cursor = new Cursor(Cursor.Current.Handle);
+                Form PencilEdit = new Form2(dataGridView2.Rows[e.RowIndex].Cells[e.ColumnIndex].Value as PencilCell);
+                PencilEdit.Location = Cursor.Position;
+                PencilEdit.StartPosition = FormStartPosition.Manual;
+                PencilEdit.ShowDialog();
+                dataGridView2.Refresh();
+            }
+
         }
     }
 

@@ -155,7 +155,7 @@ namespace WinFormsApp2
 
             int curVal = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value);
 
-            if (curVal >= 0 && curVal < 9)
+            if (curVal >= 0 && curVal <= 9)
             {
                 updatePencil(e.RowIndex, e.ColumnIndex);
             }
@@ -233,6 +233,47 @@ namespace WinFormsApp2
             }
         }
 
+        private void CheckNumbersOnlyCellBox()
+        {
+            foreach (DataGridViewRow row in dataGridView2.Rows)
+            {
+                foreach (DataGridViewCell cell in row.Cells)
+                {
+                    for (int i = 0; i < 9; i++)
+                    {
+                        int count = 0;
+                        int cellRow = -1;
+                        int cellCol = -1;
+                        for (int k = cell.ColumnIndex - (cell.ColumnIndex % 3); k <= cell.ColumnIndex + 2 - (cell.ColumnIndex % 3); k++)
+                        {
+                            for (int j = cell.RowIndex - (cell.RowIndex % 3); j <= cell.RowIndex + 2 - (cell.RowIndex % 3); j++)
+                            {
+                                var curCell = dataGridView2.Rows[j].Cells[k];
+                                if ((curCell.Value as PencilCell).canBe[i])
+                                {
+                                    count++;
+                                    cellCol = curCell.ColumnIndex;
+                                    cellRow = curCell.RowIndex;
+                                }
+
+
+                            }
+                        }
+
+                        if (count == 1)
+                        {
+                            oldVal = Convert.ToInt32(dataGridView1.Rows[cellRow].Cells[cellCol].Value);
+                            dataGridView1.Rows[cellRow].Cells[cellCol].Value = (i + 1);
+                            updatePencil(cellRow, cellCol);
+                            dataGridView1.Refresh();
+                            dataGridView2.Refresh();
+                        }
+
+                    }
+                }
+            }
+        }
+
         private void CheckNumbersOnlyCellRow()
         {
             foreach (DataGridViewRow row in dataGridView2.Rows)
@@ -278,7 +319,7 @@ namespace WinFormsApp2
                     foreach (DataGridViewRow row in dataGridView2.Rows)
                     {
 
-                        
+
 
                         var cell = row.Cells[col.Index];
                         if ((cell.Value as PencilCell).canBe[i])
@@ -290,7 +331,7 @@ namespace WinFormsApp2
 
 
 
-                        
+
 
                     }
                     if (count == 1)
@@ -387,6 +428,11 @@ namespace WinFormsApp2
         private void button5_Click(object sender, EventArgs e)
         {
             CheckNumbersOnlyCellCol();
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            CheckNumbersOnlyCellBox();
         }
     }
 

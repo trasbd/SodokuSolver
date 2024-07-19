@@ -1,6 +1,7 @@
 using SodokuSolver;
 using System.CodeDom;
 using System.Data;
+using System.Data.Common;
 using System.Text;
 
 namespace WinFormsApp2
@@ -353,6 +354,68 @@ namespace WinFormsApp2
             }
         }
 
+        private void Check2Num2SquaresWays()
+        {
+            foreach (DataGridViewRow row in dataGridView2.Rows)
+            {
+                foreach (DataGridViewCell cell in row.Cells)
+                {
+                    List<PencilCell> penBox = getPencilBox(cell.RowIndex, cell.ColumnIndex);
+
+                    PencilCell curCell = cell.Value as PencilCell;
+
+                    Check2Num2Squares(penBox, curCell);
+
+                    penBox.Clear();
+                    foreach(DataGridViewCell penRowCell in row.Cells)
+                    {
+                        penBox.Add(penRowCell.Value as PencilCell);
+                    }
+                    Check2Num2Squares(penBox, curCell);
+                    penBox.Clear();
+
+                    foreach (DataGridViewRow row2 in dataGridView2.Rows)
+                    {
+                        penBox.Add(row2.Cells[cell.ColumnIndex].Value as PencilCell);
+                    }
+
+                    Check2Num2Squares(penBox, curCell);
+
+                }
+            }
+
+            
+
+        }
+
+        private void Check2Num2Squares(List<PencilCell> penBox, PencilCell curCell)
+        {
+
+            if (curCell.numCanBe == 2)
+            {
+
+                if (penBox.Count(x => x.Equals(curCell)) == 2)
+                {
+                    int val1 = 1 + Array.IndexOf(curCell.canBe, true);
+                    int val2 = 1 + Array.LastIndexOf(curCell.canBe, true);
+
+                    foreach (PencilCell penOthers in penBox)
+                    {
+                        if (!curCell.Equals(penOthers))
+                        {
+                            penOthers.removeMark(val1);
+                            penOthers.removeMark(val2);
+                        }
+                    }
+                }
+
+            }
+
+
+            dataGridView2.Refresh();
+
+        }
+
         private void button2_Click(object sender, EventArgs e)
         {
             SaveGridCSV(".\\grid.csv");
@@ -427,6 +490,24 @@ namespace WinFormsApp2
             updatePencil(0, 0);
         }
 
+
+        private List<PencilCell> getPencilBox(int row, int column)
+        {
+            List<PencilCell> pList = new List<PencilCell>();
+
+
+            for (int k = column - (column % 3); k <= column + 2 - (column % 3); k++)
+            {
+                for (int j = row - (row % 3); j <= row + 2 - (row % 3); j++)
+                {
+                    pList.Add(dataGridView2.Rows[j].Cells[k].Value as PencilCell);
+                }
+            }
+
+            return pList;
+
+        }
+
         private void button4_Click(object sender, EventArgs e)
         {
             CheckNumbersOnlyCellRow();
@@ -470,6 +551,12 @@ namespace WinFormsApp2
             }
 
             Cursor = Cursors.Default;
+
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            Check2Num2SquaresWays();
 
         }
     }
@@ -539,6 +626,8 @@ namespace WinFormsApp2
             else
                 canBe[val - 1] = false;
         }
+
+        public int numCanBe { get { return canBe.Count(x => x); } }
 
         public override string ToString()
         {
